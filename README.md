@@ -3,7 +3,7 @@
 ## Base Paper
 
 This repository aims to replicate the research from the paper **Exploring RGB+Depth Fusion for Real-Time
-Object Detection** by Tanguy Ophoff, Kristof Van Beeck and toon Goedemé. 
+Object Detection** by Tanguy Ophoff, Kristof Van Beeck and Toon Goedemé. 
 
     @article{ophoff2019exploring,
     title={Exploring RGB+ Depth fusion for real-time object detection},
