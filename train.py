@@ -35,13 +35,14 @@ def train_yolov2(model, train_dataloader, loss_fn, optimizer, num_epochs, device
             # images = torch.stack([item[0] for item in batch]).to(device)  # Stack images in the batch and send to device
             # targets = torch.stack([item[1] for item in batch]).to(device)  # Stack labels in the batch and send to device
             images = X.to(device)
-            targets = y["boxes"].to(device)
+            targets = y["boxes"]
+            targets = targets.to(device)
             
             # Forward pass
             outputs = model(images)
             
             # Calculate loss
-            loss = loss_fn(outputs, targets)
+            loss = loss_fn(outputs.cpu(), targets.cpu())
             
             # Backward pass and optimization
             optimizer.zero_grad()
