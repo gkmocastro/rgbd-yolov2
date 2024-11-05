@@ -2,4 +2,5 @@
 data
 weights
 __pycache__
-5_epochs.pt
+*.pt
+models
