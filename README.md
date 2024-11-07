@@ -39,19 +39,20 @@ Adding to the research, our research aims to test depth maps estimated using the
     4. Code the `DatasetObject()` class
     5. Adapt the `DatasetObject()` to work with RGBD data
 
-4. Train Loop (`train.py`) ![](https://geps.dev/progress/70) 
+4. Train Loop (`train.py`) ![](https://geps.dev/progress/50) 
     1. Understanding how YoloV2 fine tuning works
     2. Code `train_step()` function
     3. Code `train` function 
+    4. Layer Freezing
 
 5. Metrics (`utils.py`) ![](https://geps.dev/progress/0) 
     1. Code metrics
-    2. ...
+    2. Results visualization
 
 
 ### Part 2: Training and testing models
 
-1. Train and test the RGB-only KITTI YoloV2 Model
+1. Train and test the RGB-only KITTI YoloV2 Model ![](https://geps.dev/progress/30) 
 2. Train and test the Depth-only KITTI YoloV2 Model
    1. Run the depth estimator on the dataset
    2. Modify the network (first layer only, as the paper says)
