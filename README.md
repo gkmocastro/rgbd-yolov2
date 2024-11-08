@@ -32,12 +32,13 @@ Adding to the research, our research aims to test depth maps estimated using the
     1. Understand how lightnet RegionLoss works
     2. Code a function to call RegionLoss from lightnet
 
-3. Dataset Object (`dataset.py`) ![](https://geps.dev/progress/80) 
+3. Dataset Object (`dataset.py`) ![](https://geps.dev/progress/60) 
     1. Understand KITTI annotations
     2. Understand the YoloV2 expected annotation format
     3. Code a function to convert KITTI for YoloV2 lightnet annotation format
     4. Code the `DatasetObject()` class
     5. Adapt the `DatasetObject()` to work with RGBD data
+    6. Augmentation
 
 4. Train Loop (`train.py`) ![](https://geps.dev/progress/50) 
     1. Understanding how YoloV2 fine tuning works
@@ -48,6 +49,7 @@ Adding to the research, our research aims to test depth maps estimated using the
 5. Metrics (`utils.py`) ![](https://geps.dev/progress/0) 
     1. Code metrics
     2. Results visualization
+   
 
 
 ### Part 2: Training and testing models
