@@ -25,8 +25,8 @@ Adding to the research, our research aims to test depth maps estimated using the
 
 1. Loading models from lightnet framework (`model.py`) ![](https://geps.dev/progress/80) 
     1. [x] Understand how model building works
-    2. Code a function to call YoloV2 or YoloFusion from lightnet
-    3. Build a remapping function to load the darknet19 pre-trained weights into the correct layers of YoloFusion
+    2. [ ] Code a function to call YoloV2 or YoloFusion from lightnet
+    3. [ ] Build a remapping function to load the darknet19 pre-trained weights into the correct layers of YoloFusion
 
 2. Setup Loss Function (`loss.py`) ![](https://geps.dev/progress/100) 
     1. [x] Understand how lightnet RegionLoss works
@@ -36,15 +36,15 @@ Adding to the research, our research aims to test depth maps estimated using the
     1. [x] Understand KITTI annotations 
     2. [x] Understand the YoloV2 expected annotation format
     3. [x] Code a function to convert KITTI for YoloV2 lightnet annotation format
-    4. [ ]Code the `DatasetObject()` class
-    5. [ ]Adapt the `DatasetObject()` to work with RGBD data
+    4. [ ] Code the `DatasetObject()` class
+    5. [ ] Adapt the `DatasetObject()` to work with RGBD data
     6. Augmentation
 
 4. Train Loop (`train.py`) ![](https://geps.dev/progress/50) 
-    1. Understanding how YoloV2 fine tuning works
+    1. [ ] Understanding how YoloV2 fine tuning works
     2. [x] Code `train_step()` function
     3. [x] Code `train` function 
-    4. Layer Freezing
+    4. [ ] Layer Freezing
 
 5. Metrics (`utils.py`) ![](https://geps.dev/progress/30) 
     1. Code metrics
