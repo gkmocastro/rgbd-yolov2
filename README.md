@@ -38,7 +38,7 @@ Adding to the research, our research aims to test depth maps estimated using the
     3. [x] Code a function to convert KITTI for YoloV2 lightnet annotation format
     4. [ ] Code the `DatasetObject()` class
     5. [ ] Adapt the `DatasetObject()` to work with RGBD data
-    6. Augmentation
+    6. [ ] Augmentation
 
 4. Train Loop (`train.py`) ![](https://geps.dev/progress/50) 
     1. [ ] Understanding how YoloV2 fine tuning works
@@ -47,7 +47,7 @@ Adding to the research, our research aims to test depth maps estimated using the
     4. [ ] Layer Freezing
 
 5. Metrics (`utils.py`) ![](https://geps.dev/progress/30) 
-    1. Code metrics
+    1. [ ] Code metrics
     2. [x] Results visualization  
    
 
