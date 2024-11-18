@@ -48,6 +48,8 @@ Adding to the research, our research aims to test depth maps estimated using the
 
 5. Metrics (`utils.py`) ![](https://geps.dev/progress/30) 
     1. [ ] Code metrics
+       1. [x] Implement a mAP function
+       2. [ ] calculate mAP in the test_step
     2. [x] Results visualization  
    
 
