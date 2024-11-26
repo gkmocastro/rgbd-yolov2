@@ -63,7 +63,13 @@ def to_pixel_coords(box, img_width, img_height):
     y_max = (y_center + height / 2) * img_height
     return x_min, y_min, x_max - x_min, y_max - y_min
 
-
+def to_xyxy_coords(box, img_width, img_height):
+    x_center, y_center, width, height = box
+    x_min = (x_center - width / 2) * img_width
+    y_min = (y_center - height / 2) * img_height
+    x_max = (x_center + width / 2) * img_width
+    y_max = (y_center + height / 2) * img_height
+    return x_min, y_min, x_max, y_max
 
 def draw_bounding_boxes(index, model, dataset, GetBoxes_fn, nms_fn, class_names, device="cpu"):
     """
