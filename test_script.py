@@ -1,10 +1,11 @@
 import torch
 import lightnet as ln
-from utils import to_pixel_coords
+from utils import to_pixel_coords, to_xyxy_coords, mean_average_precision
 
 
 def test_step(model: torch.nn.Module, 
-              dataloader: torch.utils.data.DataLoader, 
+              dataloader: torch.utils.data.DataLoader,
+              batch_size, 
               loss_fn: torch.nn.Module,
               device):
     # Put model in eval mode
@@ -43,41 +44,41 @@ def test_step(model: torch.nn.Module,
             box_tensor = GetBoxes_fn(model_output.cpu())
             output_boxes = nms_fn(box_tensor)
 
-
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
-            # NEED TO ADAPT TO THE BATCH OF IMAGES
             
-            for box in y:
-                if box[0] != -1: #supress the padding
-                    x1, y1, x2, y2 = to_pixel_coords(box[1:], 416, 416)
+            for img_index, boxes in enumerate(y):
+                for box in boxes:
+                    if box[0].item() == -1: #supress the padding
+                        continue
+                    # works with xyxy coords only!
+                    #x1, y1, x2, y2 = box[1:]*416
+                    x1, y1, x2, y2 = to_xyxy_coords(box[1:], 416, 416)
                     # add image index on the list
-                    pred_box = [img_index, box[0].item(), 1, x1.item(), y1.item(), x2.item(), y2.item()] 
-                    true_boxes.append(pred_box)
+                    
+                    true_box = [img_index+batch*batch_size, box[0].item(), 1, x1.item(), y1.item(), x2.item(), y2.item()] 
+                    true_boxes.append(true_box)
 
             for bbox in output_boxes:
-                x, y, h, w = to_pixel_coords(bbox[1:5], 1, 1)
-                pred_boxes.append(
-                    [img_index, 
-                    bbox[6].item(), 
-                    bbox[5].item() , 
-                    x.item(), 
-                    y.item(),
-                    h.item(), 
-                    w.item()])
+                # works with xyxy coords only!
+                x1, y1, x2, y2 = to_xyxy_coords(bbox[1:5], 1, 1)
+                #x1, y1, x2, y2 = bbox[1:5]
+            
+                pred_box = [bbox[0].item()+batch*batch_size, 
+                bbox[6].item(), 
+                bbox[5].item() , 
+                x1.item(), 
+                y1.item(),
+                x2.item(), 
+                y2.item()]
 
+                pred_boxes.append(pred_box)
 
-            img_index += 1
+            pred_boxes = sorted(pred_boxes, key=lambda x: x[0])
             
             
     # Adjust metrics to get average loss and accuracy per batch 
     test_loss = test_loss / len(dataloader)
     # test_acc = test_acc / len(dataloader)
-    return test_loss, pred_boxes, true_boxes
+
+    metric_map = mean_average_precision(pred_boxes=pred_boxes, true_boxes=true_boxes, iou_threshold=0.5, box_format="corners", num_classes=3)
+
+    return metric_map, test_loss, pred_boxes, true_boxes
