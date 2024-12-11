@@ -2,7 +2,7 @@ from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset
 
-
+import cv2
     
 import os
 from pathlib import Path
@@ -13,11 +13,13 @@ import torchvision.transforms as T
 
 class YoloDarknetDataset(Dataset):
     def __init__(self, 
-                 images_dir, 
+                 images_dir,
+                 depth_dir, 
                  labels_dir, 
-                 classes=["Cyclist", "Pedestrian", "car"], 
+                 classes=["Cyclist", "Pedestrian", "Car"], 
                  transform=None, 
-                 max_boxes=22):
+                 max_boxes=22,
+                 data_mod="RGB"):
         """
         Args:
             images_dir (str or Path): Path to the directory containing images.
@@ -25,15 +27,20 @@ class YoloDarknetDataset(Dataset):
             classes (list): List of class names.
             transform (callable, optional): Transform to be applied on an image.
             max_boxes (int): The fixed number of bounding boxes per image (default is 22).
+            data_mod (str): Modality of data used [RGB, D, RGBD]
         """
         self.images_dir = Path(images_dir)
+        self.depth_dir = Path(depth_dir)
         self.labels_dir = Path(labels_dir)
         self.transform = transform
         self.classes = classes
         self.max_boxes = max_boxes
+        self.data_mod = data_mod
 
         # Gather all image files in the directory
         self.image_files = sorted([p for p in self.images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
+        # Gather all depth files in the directory
+        self.depth_files = sorted([p for p in self.images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
 
     def __len__(self):
         return len(self.image_files)
@@ -41,8 +48,21 @@ class YoloDarknetDataset(Dataset):
     def __getitem__(self, idx):
         # Load the image
         img_path = self.image_files[idx]
+        depth_path = self.depth_files[idx]
+
         img = Image.open(img_path).convert('RGB')
 
+
+        # se a opção do depth, entao carrega o mapa
+        # ainda precisa fazer ele retornar um RGBD 
+        # Split the RGB image into its channels
+        #r, g, b = rgb_image.split()
+
+        # Create a new 4-channel image by combining the RGB and the grayscale channel
+        #rgba_image = Image.merge("RGBA", (r, g, b, grayscale_image))
+        
+        if self.data_mod == "D":
+            img = Image.open(depth_path).convert('L')
         # Apply transforms if specified
         if self.transform:
             img = self.transform(img)

@@ -61,22 +61,52 @@ def train_yolov2(model, train_dataloader, loss_fn, optimizer, num_epochs, device
 
 if __name__=="__main__":
 
-    IMG_DIR = "data/data_object_image_2/training/image_2"
-    LABEL_DIR =  "data/labels"
-    BATCH_SIZE = 8
-    NUM_WORKERS = os.cpu_count()
+    import torch
+    from torch.utils.data import DataLoader
+    from dataset import YoloDarknetDataset
+    from torchvision import transforms
+    import torch.optim as optim
+    from train import train_yolov2
+    import os
+    from model import model_builder
+    import lightnet as ln
 
+    #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
+    TRAIN_IMG_DIR = "data/data_split/train/images"
+    TRAIN_DEPTH_DIR = "data/data_split/train/depth"
+    #LABEL_DIR =  "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/labels"
+    TRAIN_LABEL_DIR =  "data/data_split/train/labels"
+    BATCH_SIZE = 16
+    NUM_WORKERS = os.cpu_count()
+    LEARNING_RATE = 0.01
+    NUM_EPOCHS = 100
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+    print(f"Using Device {DEVICE}")
+
+    model = model_builder(num_classes=3).to(DEVICE)
+
+    loss_fn = ln.network.loss.RegionLoss(
+        num_classes= model.num_classes,
+        anchors=model.anchors,
+        network_stride=model.stride
+    ).to(DEVICE)
+
+    optimizer = optim.Adam(
+        model.parameters(),
+        lr=LEARNING_RATE,
+    )
 
     train_transforms = transforms.Compose([
         transforms.Resize((416, 416)),
         transforms.ToTensor()
     ])
 
-
     train_dataset = YoloDarknetDataset(
-        images_dir=IMG_DIR,
-        labels_dir=LABEL_DIR,
-        classes=["Cyclist", "Pedestrian", "car"],
+        images_dir=TRAIN_IMG_DIR,
+        depth_dir=TRAIN_DEPTH_DIR,
+        labels_dir=TRAIN_LABEL_DIR,
+        classes=["Cyclist", "Pedestrian", "Car"],
         transform=train_transforms,
     )
 
@@ -88,4 +118,12 @@ if __name__=="__main__":
         pin_memory=True
     )
 
-    train_yolov2()
+
+    train_yolov2(model=model, 
+                train_dataloader=train_dataloader, 
+                loss_fn=loss_fn, 
+                optimizer=optimizer, 
+                num_epochs=NUM_EPOCHS, 
+                device=DEVICE)
+    
+    model.save("models/RGB_100_epochs.pt")
