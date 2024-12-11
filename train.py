@@ -72,10 +72,10 @@ if __name__=="__main__":
     import lightnet as ln
 
     #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
-    TRAIN_IMG_DIR = "data/data_split/train/images"
-    TRAIN_DEPTH_DIR = "data/data_split/train/depth"
+    TRAIN_IMG_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/images"
+    TRAIN_DEPTH_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/output_train"
     #LABEL_DIR =  "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/labels"
-    TRAIN_LABEL_DIR =  "data/data_split/train/labels"
+    TRAIN_LABEL_DIR =  "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/labels"
     BATCH_SIZE = 16
     NUM_WORKERS = os.cpu_count()
     LEARNING_RATE = 0.01
