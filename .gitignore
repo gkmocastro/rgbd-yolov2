@@ -4,3 +4,4 @@ weights
 __pycache__
 *.pt
 models
+figs/
