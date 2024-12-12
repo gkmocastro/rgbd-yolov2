@@ -75,6 +75,7 @@ def train_yolov2(model,
             best_loss = avg_loss
             if epoch > 60:
                 model.save(f"models/{data_mod}_{epoch}.pth")
+                print(f"Saving new best model Epoch: {epoch} | Loss: {avg_loss}")
             
 
         epoch_losses.append(avg_loss)
