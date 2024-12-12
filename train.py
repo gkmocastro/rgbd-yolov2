@@ -3,9 +3,20 @@ from torch.utils.data import DataLoader
 from dataset import YoloDarknetDataset
 from torchvision import transforms
 import os
+from torch.utils.data import DataLoader
+import torch.optim as optim
+from train import train_yolov2
+from model import model_builder
+import lightnet as ln
 
 
-def train_yolov2(model, train_dataloader, loss_fn, optimizer, num_epochs, device):
+def train_yolov2(model, 
+                 train_dataloader, 
+                 loss_fn, 
+                 optimizer, 
+                 num_epochs, 
+                 device,
+                 data_mod="RGBD"):
     """
     Trains the YOLOv2 model.
 
@@ -54,22 +65,24 @@ def train_yolov2(model, train_dataloader, loss_fn, optimizer, num_epochs, device
 
         # Calculate and store average loss for the epoch
         avg_loss = total_loss / len(train_dataloader)
-        epoch_losses.append(avg_loss)
+        
         print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+        if epoch == 0:
+            best_loss = avg_loss
+
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            if epoch > 60:
+                model.save(f"models/{data_mod}_{epoch}.pth")
+            
+
+        epoch_losses.append(avg_loss)
+        
 
     return epoch_losses
 
 if __name__=="__main__":
-
-    import torch
-    from torch.utils.data import DataLoader
-    from dataset import YoloDarknetDataset
-    from torchvision import transforms
-    import torch.optim as optim
-    from train import train_yolov2
-    import os
-    from model import model_builder
-    import lightnet as ln
 
     #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
     TRAIN_IMG_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/images"
@@ -81,6 +94,7 @@ if __name__=="__main__":
     LEARNING_RATE = 0.01
     NUM_EPOCHS = 100
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+    DATA_MOD = "RGB"
 
     print(f"Using Device {DEVICE}")
 
@@ -124,6 +138,5 @@ if __name__=="__main__":
                 loss_fn=loss_fn, 
                 optimizer=optimizer, 
                 num_epochs=NUM_EPOCHS, 
-                device=DEVICE)
-    
-    model.save("models/RGB_100_epochs.pt")
+                device=DEVICE,
+                data_mod=DATA_MOD)
