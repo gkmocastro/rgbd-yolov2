@@ -5,7 +5,6 @@ from torchvision import transforms
 import os
 from torch.utils.data import DataLoader
 import torch.optim as optim
-from train import train_yolov2
 from model import model_builder
 import lightnet as ln
 
