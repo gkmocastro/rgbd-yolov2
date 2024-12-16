@@ -94,11 +94,12 @@ if __name__=="__main__":
     LEARNING_RATE = 0.01
     NUM_EPOCHS = 100
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-    DATA_MOD = "RGB"
+    MODEL_TYPE = "depth"
+    FUSE_LAYER = 16
 
     print(f"Using Device {DEVICE}")
 
-    model = model_builder(num_classes=3).to(DEVICE)
+    model = model_builder(num_classes=3, model_type=MODEL_TYPE, fuse_layer=FUSE_LAYER).to(DEVICE)
 
     loss_fn = ln.network.loss.RegionLoss(
         num_classes= model.num_classes,
@@ -139,4 +140,4 @@ if __name__=="__main__":
                 optimizer=optimizer, 
                 num_epochs=NUM_EPOCHS, 
                 device=DEVICE,
-                data_mod=DATA_MOD)
+                data_mod=MODEL_TYPE)

@@ -19,7 +19,7 @@ class YoloDarknetDataset(Dataset):
                  classes=["Cyclist", "Pedestrian", "Car"], 
                  transform=None, 
                  max_boxes=22,
-                 data_mod="RGB"):
+                 model_type="rgb"):
         """
         Args:
             images_dir (str or Path): Path to the directory containing images.
@@ -35,12 +35,12 @@ class YoloDarknetDataset(Dataset):
         self.transform = transform
         self.classes = classes
         self.max_boxes = max_boxes
-        self.data_mod = data_mod
+        self.model_type = model_type
 
         # Gather all image files in the directory
         self.image_files = sorted([p for p in self.images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
         # Gather all depth files in the directory
-        self.depth_files = sorted([p for p in self.images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
+        self.depth_files = sorted([p for p in self.depth_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
 
     def __len__(self):
         return len(self.image_files)
@@ -50,7 +50,8 @@ class YoloDarknetDataset(Dataset):
         img_path = self.image_files[idx]
         depth_path = self.depth_files[idx]
 
-        img = Image.open(img_path).convert('RGB')
+        if self.model_type=="rgb":
+            img = Image.open(img_path).convert('RGB')
 
 
         # se a opção do depth, entao carrega o mapa
@@ -61,7 +62,7 @@ class YoloDarknetDataset(Dataset):
         # Create a new 4-channel image by combining the RGB and the grayscale channel
         #rgba_image = Image.merge("RGBA", (r, g, b, grayscale_image))
         
-        if self.data_mod == "D":
+        if self.model_type == "depth":
             img = Image.open(depth_path).convert('L')
         # Apply transforms if specified
         if self.transform:
