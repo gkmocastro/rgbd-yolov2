@@ -53,7 +53,8 @@ class YoloDarknetDataset(Dataset):
         if self.model_type=="rgb":
             img = Image.open(img_path).convert('RGB')
 
-
+        if self.model_type=="rgbd":
+            pass
         # se a opção do depth, entao carrega o mapa
         # ainda precisa fazer ele retornar um RGBD 
         # Split the RGB image into its channels
