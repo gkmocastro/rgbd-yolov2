@@ -3,7 +3,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 import cv2
-    
+import numpy as np
 import os
 from pathlib import Path
 import torch
@@ -54,7 +54,22 @@ class YoloDarknetDataset(Dataset):
             img = Image.open(img_path).convert('RGB')
 
         if self.model_type=="rgbd":
-            pass
+            rgb_image = Image.open(img_path).convert("RGB") 
+            depth_image = Image.open(depth_path).convert("L")
+
+            # Convert images to numpy arrays
+            rgb_array = np.array(rgb_image)  # Shape: (H, W, 3)
+            depth_array = np.array(depth_image)  # Shape: (H, W)
+
+            depth_array = np.expand_dims(depth_array, axis=-1)  # Shape: (H, W, 1)
+
+            four_channel_array = np.concatenate((rgb_array, depth_array), axis=-1)  # Shape: (H, W, 4)
+
+            img = Image.fromarray(four_channel_array, mode="RGBA")
+
+
+
+
         # se a opção do depth, entao carrega o mapa
         # ainda precisa fazer ele retornar um RGBD 
         # Split the RGB image into its channels
@@ -65,6 +80,7 @@ class YoloDarknetDataset(Dataset):
         
         if self.model_type == "depth":
             img = Image.open(depth_path).convert('L')
+            
         # Apply transforms if specified
         if self.transform:
             img = self.transform(img)

@@ -3,7 +3,7 @@ import functools
 import torch
 from torch import nn
 from utils import rename_state_dict
-from remapping_rules import remap_rgbd_15_fusion_model
+from remapping_rules import remap_rgbd_15_fusion_model, remap_rgbd_15_fusion_layers
 
 def model_builder(num_classes, model_type="rgb", fuse_layer=16):
     """ 
@@ -35,7 +35,11 @@ def model_builder(num_classes, model_type="rgb", fuse_layer=16):
         renamed_rgb_state_dict = rename_state_dict(rgb_state_dict, remap_rgbd_15_fusion_model)
         fusion_model.load_state_dict(renamed_rgb_state_dict, strict=False)
 
-        ## test equality of a single layer, must improve to test all
+        depth_state_dict = torch.load("models/depth_99.pth")
+        renamed_depth_state_dict = rename_state_dict(depth_state_dict, remap_rgbd_15_fusion_layers)
+        fusion_model.load_state_dict(renamed_depth_state_dict, strict=False)
+
+        ## test equality of a single layer, must change to test all
         fusion_weight = fusion_model.state_dict()['layers.1.regular.11_convbatch.layers.1.weight'].cpu()
         rgb_weight = rgb_state_dict['backbone.module.11_convbatch.layers.1.weight'].cpu()
         if torch.equal(fusion_weight, rgb_weight):
@@ -45,3 +49,6 @@ def model_builder(num_classes, model_type="rgb", fuse_layer=16):
 
     
         return fusion_model
+    else: 
+        print("Model type is not valid. Try rgb, depth or rgbd.")
+        return None
