@@ -44,12 +44,12 @@ Adding to the research, our research aims to test depth maps estimated using the
     2. [x] Code `train_step()` function
     3. [x] Code `train` function 
 
-5. Metrics (`utils.py`) ![](https://geps.dev/progress/80) 
+5. Metrics (`utils.py`) ![](https://geps.dev/progress/100) 
     1. [X] Code metrics
        1. [x] Implement a mAP function
        2. [X] calculate mAP in the test_step
     2. [x] Results visualization  
-    3. [ ] Implement the metric as the base paper
+    3. [X] Implement the metric as the base paper
    
 
 
