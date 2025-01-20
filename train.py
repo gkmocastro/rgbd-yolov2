@@ -94,8 +94,8 @@ if __name__=="__main__":
     LEARNING_RATE = 0.01
     NUM_EPOCHS = 100
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-    MODEL_TYPE = "depth"
-    FUSE_LAYER = 16
+    MODEL_TYPE = "rgbd"
+    FUSE_LAYER = 15
 
     print(f"Using Device {DEVICE}")
 
