@@ -90,7 +90,7 @@ if __name__=="__main__":
     #LABEL_DIR =  "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/labels"
     TRAIN_LABEL_DIR =  "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/labels"
     BATCH_SIZE = 16
-    NUM_WORKERS = os.cpu_count()
+    NUM_WORKERS = 32
     LEARNING_RATE = 0.01
     NUM_EPOCHS = 100
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
