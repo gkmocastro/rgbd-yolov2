@@ -55,12 +55,16 @@ Adding to the research, our research aims to test depth maps estimated using the
 
 ### Part 2: Training and testing models
 
-1. Train and test the RGB-only KITTI YoloV2 Model ![](https://geps.dev/progress/30) 
-2. Train and test the Depth-only KITTI YoloV2 Model ![](https://geps.dev/progress/30) 
-   1. Run the depth estimator on the dataset
-   2. Modify the network (first layer only, as the paper says)
-3. Train and test a single RGBD YoloFusion KITTI Model
-4. Train and test many RGBD YoloFusion KITTI Model changing the fusion layer
+1. Train and test the RGB-only KITTI YoloV2 Model ![](https://geps.dev/progress/50) 
+2. Train and test the Depth-only KITTI YoloV2 Model ![](https://geps.dev/progress/50) 
+   1. Using Marigold Dataset (Train :white_check_mark: | Test)
+   2. Using Depth Anything v2 Dataset (Train :white_check_mark: | Test)
+   3. Using Midas Dataset (Train | Test)
+3. Train and test a single RGBD YoloFusion KITTI Model ![](https://geps.dev/progress/50) 
+   1. Using Marigold Dataset (Train :white_check_mark: | Test)
+   2. Using Depth Anything v2 Dataset (Train :white_check_mark: | Test)
+   3. Using Midas Dataset 
+4. Train and test many RGBD YoloFusion KITTI Model changing the fusion layer (optional) ![](https://geps.dev/progress/0)
    
 ### Part 3: Writing
 
