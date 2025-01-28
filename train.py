@@ -72,7 +72,7 @@ def train_yolov2(model,
 
         if avg_loss < best_loss:
             best_loss = avg_loss
-            if epoch > 60:
+            if epoch > 100:
                 model.save(f"models/{data_mod}_{epoch}.pth")
                 print(f"Saving new best model Epoch: {epoch} | Loss: {avg_loss}")
 
@@ -94,7 +94,7 @@ if __name__=="__main__":
     BATCH_SIZE = 16
     NUM_WORKERS = 32
     LEARNING_RATE = 0.01
-    NUM_EPOCHS = 100
+    NUM_EPOCHS = 500
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     MODEL_TYPE = "rgbd"
     FUSE_LAYER = 15
