@@ -9,7 +9,8 @@ def test_step(model: torch.nn.Module,
               loss_fn: torch.nn.Module,
               device):
     # Put model in eval mode
-    model.eval() 
+    model.eval()
+    model.to(device) 
 
     GetBoxes_fn = ln.data.transform.GetAnchorBoxes(
                 conf_thresh=0.5,

@@ -75,12 +75,14 @@ def train_yolov2(model,
             if epoch > 60:
                 model.save(f"models/{data_mod}_{epoch}.pth")
                 print(f"Saving new best model Epoch: {epoch} | Loss: {avg_loss}")
-            
+
+        with open("loss_rgbd_anything.txt", "w") as file:
+            file.write(f"{avg_loss}\n")
 
         epoch_losses.append(avg_loss)
         
 
-    return epoch_losses
+    return None
 
 if __name__=="__main__":
 
