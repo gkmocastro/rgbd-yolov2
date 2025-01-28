@@ -88,7 +88,7 @@ if __name__=="__main__":
 
     #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
     TRAIN_IMG_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/images"
-    TRAIN_DEPTH_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/output_train"
+    TRAIN_DEPTH_DIR = "TESTE XD"
     #LABEL_DIR =  "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/labels"
     TRAIN_LABEL_DIR =  "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/labels"
     BATCH_SIZE = 16
