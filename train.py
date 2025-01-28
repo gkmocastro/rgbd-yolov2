@@ -15,7 +15,7 @@ def train_yolov2(model,
                  optimizer, 
                  num_epochs, 
                  device,
-                 data_mod="RGBD"):
+                 data_mod="rgbd"):
     """
     Trains the YOLOv2 model.
 
