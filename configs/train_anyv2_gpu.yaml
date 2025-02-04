@@ -1,0 +1,10 @@
+train_img_dir: "/home/escorpiao/workspace/depth-anything-dataset/data/image_splits/train/images"
+train_depth_dir: "/home/escorpiao/workspace/depth-anything-dataset/data/Depth_anything_v2/train"
+train_label_dir: "/home/escorpiao/workspace/depth-anything-dataset/data/image_splits/train/labels"
+batch_size: 16
+num_workers: 32
+learning_rate: 0.01
+num_epochs: 500
+device: "cuda"
+model_type: "rgbd"
+fuse_layer: 15
