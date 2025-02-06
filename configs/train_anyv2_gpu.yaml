@@ -1,3 +1,4 @@
+dataset_name: "anythingv2"
 train_img_dir: "/home/escorpiao/workspace/depth-anything-dataset/data/image_splits/train/images"
 train_depth_dir: "/home/escorpiao/workspace/depth-anything-dataset/data/Depth_anything_v2/train"
 train_label_dir: "/home/escorpiao/workspace/depth-anything-dataset/data/image_splits/train/labels"

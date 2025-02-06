@@ -1,7 +1,7 @@
 import torch
 from collections import defaultdict
 import numpy as np
-
+import yaml
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from torchvision.transforms.functional import to_pil_image
@@ -253,3 +253,8 @@ def rename_state_dict(state_dict, layer_mapping):
         else:
             print(f"Warning: {src_layer} not found in the source state_dict.")
     return renamed_state_dict
+
+
+def load_config(file_path):
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)

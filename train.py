@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import model_builder
 import lightnet as ln
-
+from utils import load_config
 
 def train_yolov2(model, 
                  train_dataloader, 
@@ -15,6 +15,7 @@ def train_yolov2(model,
                  optimizer, 
                  num_epochs, 
                  device,
+                 dataset_name,
                  data_mod="rgbd"):
     """
     Trains the YOLOv2 model.
@@ -72,12 +73,15 @@ def train_yolov2(model,
 
         if avg_loss < best_loss:
             best_loss = avg_loss
-            if epoch > 100:
-                model.save(f"models/{data_mod}_{epoch}.pth")
-                print(f"Saving new best model Epoch: {epoch} | Loss: {avg_loss}")
+            best_epoch = epoch
+            model.save(f"models/{dataset_name}_best.pth")
+            print(f"Saving new best model Epoch: {epoch} | Loss: {avg_loss}")
 
-        with open("loss_rgbd_anything.txt", "w") as file:
+        with open("output/loss_rgbd_anything.txt", "w") as file:
             file.write(f"{avg_loss}\n")
+
+        with open(f"output/output_{dataset_name}.txt", "w") as file:
+            file.write(f"Best epoch: {best_epoch}")
 
         epoch_losses.append(avg_loss)
         
@@ -86,20 +90,24 @@ def train_yolov2(model,
 
 if __name__=="__main__":
 
+    config = load_config("configs/train_anyv2_gpu.yaml")
     #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
-    TRAIN_IMG_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/images"
-    TRAIN_DEPTH_DIR = "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/output_train"
+    TRAIN_IMG_DIR = config["train_img_dir"]
+    TRAIN_DEPTH_DIR = config["train_depth_dir"]
     #LABEL_DIR =  "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/labels"
-    TRAIN_LABEL_DIR =  "/home/escorpiao/workspace/depth-anything-dataset/Depth-Anything-V2/data/train/labels"
-    BATCH_SIZE = 16
-    NUM_WORKERS = 32
-    LEARNING_RATE = 0.01
-    NUM_EPOCHS = 500
+    TRAIN_LABEL_DIR =  config["train_label_dir"]
+    BATCH_SIZE = config["batch_size"]
+    NUM_WORKERS = config["num_workers"]
+    LEARNING_RATE = config["learning_rate"]
+    NUM_EPOCHS = config["num_epochs"]
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-    MODEL_TYPE = "rgbd"
-    FUSE_LAYER = 15
+    MODEL_TYPE = config["model_type"]
+    FUSE_LAYER = config["fuse_layer"]
+    DATASET_NAME = config["dataset_name"]
 
     print(f"Using Device {DEVICE}")
+
+    print(f"Training with config: \n {config}")
 
     model = model_builder(num_classes=3, model_type=MODEL_TYPE, fuse_layer=FUSE_LAYER).to(DEVICE)
 
@@ -143,4 +151,5 @@ if __name__=="__main__":
                 optimizer=optimizer, 
                 num_epochs=NUM_EPOCHS, 
                 device=DEVICE,
+                dataset_name=DATASET_NAME
                 data_mod=MODEL_TYPE)
