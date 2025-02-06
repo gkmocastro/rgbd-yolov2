@@ -1,0 +1,11 @@
+dataset_name: "anythingv2"
+train_img_dir: "data/image_splits/train/images"
+train_depth_dir: "data/Depth_anything_v2/train/depth"
+train_label_dir: "data/image_splits/train/labels"
+batch_size: 2
+num_workers: 20
+learning_rate: 0.01
+num_epochs: 20
+device: "cuda"
+model_type: "rgbd"
+fuse_layer: 15

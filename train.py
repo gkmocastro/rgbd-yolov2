@@ -37,7 +37,7 @@ def train_yolov2(model,
     
     # Store loss per epoch
     epoch_losses = []
-
+    best_epoch = 0
     for epoch in range(num_epochs):
         model.train()  # Set model to training mode
         total_loss = 0.0  # Track total loss for the epoch
@@ -90,7 +90,7 @@ def train_yolov2(model,
 
 if __name__=="__main__":
 
-    config = load_config("configs/train_anyv2_gpu.yaml")
+    config = load_config("configs/train_anyv2_local.yaml")
     #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
     TRAIN_IMG_DIR = config["train_img_dir"]
     TRAIN_DEPTH_DIR = config["train_depth_dir"]
