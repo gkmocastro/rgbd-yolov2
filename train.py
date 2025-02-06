@@ -151,5 +151,5 @@ if __name__=="__main__":
                 optimizer=optimizer, 
                 num_epochs=NUM_EPOCHS, 
                 device=DEVICE,
-                dataset_name=DATASET_NAME
+                dataset_name=DATASET_NAME,
                 data_mod=MODEL_TYPE)
