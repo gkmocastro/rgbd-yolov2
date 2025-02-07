@@ -90,7 +90,7 @@ def train_yolov2(model,
 
 if __name__=="__main__":
 
-    config = load_config("configs/train_anyv2_local.yaml")
+    config = load_config("configs/train_anyv2_gpu.yaml")
     #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
     TRAIN_IMG_DIR = config["train_img_dir"]
     TRAIN_DEPTH_DIR = config["train_depth_dir"]
