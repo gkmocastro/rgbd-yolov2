@@ -73,7 +73,7 @@ def train_yolov2(model,
             model.save(f"models/{dataset_name}_best.pth")
             print(f"Saving new best model Epoch: {epoch} | Loss: {avg_loss}")
 
-        with open("output/loss_rgbd_anything.txt", "w") as file:
+        with open("output/loss_rgbd_anything.txt", "a") as file:
             file.write(f"{avg_loss}\n")
 
         with open(f"output/output_{dataset_name}.txt", "w") as file:
