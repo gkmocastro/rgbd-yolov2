@@ -29,7 +29,7 @@ srun -N1 -n1 --cpu_bind=cores -l --nodelist=${exec_node} \
     singularity exec --nv \
     -B /home/escorpiao -B /scratch \
     --pwd /home/escorpiao/workspace/depth-anything-dataset/rgbd-yolov2 \
-    /home/escorpiao/.lico/container/allPython.sif bash /home/escorpiao/workspace/depth-anything-dataset/rgbd-yolov2/train_depth_100epoch.sh 
+    /home/escorpiao/.lico/container/allPython.sif bash /home/escorpiao/workspace/depth-anything-dataset/rgbd-yolov2/train_rgbd.sh 
 set +x
 
 
