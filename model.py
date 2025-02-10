@@ -14,7 +14,7 @@ def model_builder(num_classes, model_type="rgb", fuse_layer=16):
     
     if model_type=="rgb":
         detection_model = ln.models.YoloV2(num_classes)
-        detection_model.load('weights/yolo-pretrained_darknet.pt', strict=False)
+        detection_model.load('weights/yolo-pretrained_darknet.pt', strict=False, weights_only=True)
         return detection_model
     elif model_type=="depth":
         detection_model = ln.models.YoloV2(num_classes)
@@ -31,11 +31,11 @@ def model_builder(num_classes, model_type="rgb", fuse_layer=16):
         return detection_model
     elif model_type=="rgbd":
         fusion_model = ln.models.YoloFusion(num_classes=3, fuse_layer=fuse_layer)
-        rgb_state_dict = torch.load("models/rgb_state_dict.pth")
+        rgb_state_dict = torch.load("models/rgb_state_dict.pth", weights_only=True)
         renamed_rgb_state_dict = rename_state_dict(rgb_state_dict, remap_rgbd_15_fusion_model)
         fusion_model.load_state_dict(renamed_rgb_state_dict, strict=False)
 
-        depth_state_dict = torch.load("models/depth_99.pth")
+        depth_state_dict = torch.load("models/depth_99.pth", weights_only=True)
         renamed_depth_state_dict = rename_state_dict(depth_state_dict, remap_rgbd_15_fusion_layers)
         fusion_model.load_state_dict(renamed_depth_state_dict, strict=False)
 

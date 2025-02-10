@@ -1,1 +1,1 @@
-Best epoch: 4
+Best epoch: 0
