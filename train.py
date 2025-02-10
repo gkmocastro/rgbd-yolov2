@@ -90,20 +90,26 @@ def train_yolov2(model,
 
 if __name__=="__main__":
 
-    config = load_config("configs/train_anyv2_gpu.yaml")
-    #IMG_DIR = "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/images_test/"
+    config = load_config("configs/train_anyv2_wizard.yaml")
+
+
+    BASE_DIR = config["base_dir"]
     TRAIN_IMG_DIR = config["train_img_dir"]
     TRAIN_DEPTH_DIR = config["train_depth_dir"]
-    #LABEL_DIR =  "/home/gustavo/workstation/depth_estimation/codes/rgbd-yolov2/data/labels"
     TRAIN_LABEL_DIR =  config["train_label_dir"]
     BATCH_SIZE = config["batch_size"]
     NUM_WORKERS = config["num_workers"]
     LEARNING_RATE = config["learning_rate"]
     NUM_EPOCHS = config["num_epochs"]
-    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     MODEL_TYPE = config["model_type"]
     FUSE_LAYER = config["fuse_layer"]
     DATASET_NAME = config["dataset_name"]
+
+    TRAIN_IMG_DIR =  BASE_DIR + TRAIN_IMG_DIR
+    TRAIN_DEPTH_DIR = BASE_DIR + TRAIN_DEPTH_DIR
+    TRAIN_LABEL_DIR = BASE_DIR + TRAIN_LABEL_DIR
+
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
     print(f"Using Device {DEVICE}")
 
