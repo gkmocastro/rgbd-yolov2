@@ -8,3 +8,4 @@ figs/
 __pycache__
 *.sif
 .out
+output
