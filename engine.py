@@ -62,7 +62,7 @@ def train_yolov2(model,
         # Calculate and store average loss for the epoch
         avg_loss = total_loss / len(train_dataloader)
         
-        print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}")
+        print(f"-----\nEpoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
         if epoch == 0:
             best_loss = avg_loss
