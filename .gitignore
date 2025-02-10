@@ -7,3 +7,4 @@ models
 figs/
 __pycache__
 *.sif
+.out
