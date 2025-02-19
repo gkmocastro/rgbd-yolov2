@@ -2,10 +2,14 @@ import torch
 from collections import defaultdict
 import numpy as np
 import yaml
+import cv2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from torchvision.transforms.functional import to_pil_image
 from collections import Counter
+import lightnet as ln
+from pathlib import Path
+from PIL import Image
 
 def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
     """
@@ -71,72 +75,42 @@ def to_xyxy_coords(box, img_width, img_height):
     y_max = (y_center + height / 2) * img_height
     return x_min, y_min, x_max, y_max
 
-def draw_bounding_boxes(index, model, dataset, GetBoxes_fn, nms_fn, class_names, device="cpu"):
+def draw_bounding_boxes(image, predicted_boxes, true_boxes):
     """
-    Draws bounding boxes on an image with predictions and ground truths.
-
-    Args:
-        index (int): Index of the image in the dataset.
-        model (torch.nn.Module): Trained YOLOv2 model.
-        dataset (torch.utils.data.Dataset): Dataset containing the images and labels.
-        nms_fn (function): Non-Maximum Suppression function to filter model outputs.
-        class_names (list of str): List of class names.
-        device (str): Device to run the model on ("cpu" or "cuda").
+    Draws predicted and ground truth bounding boxes on an image.
+    
+    Parameters:
+    - image: The original image (NumPy array).
+    - predicted_boxes: List of lists, each containing [index, class_index, confidence, x1, y1, x2, y2].
+    - true_boxes: List of lists, each containing [index, class_index, x1, y1, x2, y2].
     """
-    model.eval()
-    model.to(device)
-
-    # Load image and ground truth
-    image, target = dataset[index]
-    target = target["boxes"]
-    image = image.to(device).unsqueeze(0)  # Add batch dimension
-    ground_truth_boxes = target[:, 1:]  # Get the ground truth bounding boxes
-    ground_truth_classes = target[:, 0].int()  # Get the ground truth class IDs
-
-    # Run the model to get predictions
-    with torch.inference_mode():
-        predictions = model(image)
-
-    # Apply GetBoxes to transform the model output into bouding box format
-    predictions = GetBoxes_fn(predictions.cpu())
-
-    # Apply NMS to the predictions
-    predictions = nms_fn(predictions)
+    # Make a copy of the image to avoid modifying the original
+    image_copy = image.copy()
     
-    # Convert the image back to a PIL format for visualization
-    image = to_pil_image(image.squeeze(0).cpu())  # Remove batch dimension
-
-    # Plot the image
-    fig, ax = plt.subplots(1)
-    ax.imshow(image)
+    # Draw predicted bounding boxes (Blue)
+    for box in predicted_boxes:
+        _, class_index, confidence, x1, y1, x2, y2 = box
+        cv2.rectangle(image_copy, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+        label = f"Pred {class_index}: {confidence:.2f}"
+        cv2.putText(image_copy, label, (int(x1), int(y1) - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
     
+    # Draw ground truth bounding boxes (Green)
+    for box in true_boxes:
+        _, class_index,_,  x1, y1, x2, y2 = box
+        cv2.rectangle(image_copy, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+        label = f"GT {class_index}"
+        cv2.putText(image_copy, label, (int(x1), int(y1) - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    
+    # Convert BGR to RGB for displaying with Matplotlib
+    #image_rgb = cv2.cvtColor(image_copy, cv2.COLOR_BGR2RGB)
+    
+    # Show the image with bounding boxes
+    # plt.figure(figsize=(10, 8))
+    # plt.imshow(image_copy)
+    # plt.axis("off")
+    # plt.show()
 
-
-    # Draw ground truth bounding boxes
-    img_width, img_height = image.size
-    for i, gt_box in enumerate(ground_truth_boxes):
-        if ground_truth_classes[i] == -1:  # Ignore padded values
-            continue
-        x, y, w, h = to_pixel_coords(gt_box.cpu(), img_width, img_height)
-        rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor="green", facecolor="none")
-        ax.add_patch(rect)
-        ax.text(x, y - 10, class_names[ground_truth_classes[i]], color="green", fontsize=12, weight="bold")
-
-    # Draw predicted bounding boxes
-    for pred in predictions:
-        #img_width=1 and img_heith=1 because the predictions weren't normalized
-        x, y, w, h = to_pixel_coords(pred[1:5].cpu(), img_width=1, img_height=1)
-        score = pred[5].item()
-        class_id = int(pred[6].item())
-        
-        rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor="red", facecolor="none")
-        ax.add_patch(rect)
-        ax.text(x, y - 10, f"{class_names[class_id]}: {score:.2f}", color="red", fontsize=12, weight="bold")
-
-    plt.axis("off")
-    plt.show()
-
-
+    return image_copy
 
 def mean_average_precision(
     pred_boxes, true_boxes, iou_threshold=0.5, box_format="midpoint", num_classes=3
@@ -258,3 +232,101 @@ def rename_state_dict(state_dict, layer_mapping):
 def load_config(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
+    
+
+def plot_result(model,
+                test_dataset,
+                index,
+                device="cpu",):
+    
+    GetBoxes_fn = ln.data.transform.GetAnchorBoxes(
+                conf_thresh=0.5,
+                network_stride=model.stride,
+                anchors=model.anchors
+            )
+
+    nms_fn = ln.data.transform.NMS(
+        iou_thresh=.5,
+        class_nms=True
+    )
+
+    
+
+    model.eval()
+    model.to(device)
+
+    # Load image and ground truth
+    image, target = test_dataset[index]
+    target = target["boxes"]
+    #image = image.to("cpu").unsqueeze(0)  # Add batch dimension
+    # ground_truth_boxes = target[:, 1:]  # Get the ground truth bounding boxes
+    # ground_truth_classes = target[:, 0].int()  # Get the ground truth class IDs
+
+    true_boxes = []
+    pred_boxes = []
+
+
+    with torch.inference_mode():
+        model_output = model(image.unsqueeze(0))
+
+        output_boxes = GetBoxes_fn(model_output)
+        output_boxes = nms_fn(output_boxes)
+
+    for _, boxes in enumerate(target):
+
+        if boxes[0].item() == -1: #supress the padding
+            continue
+        # works with xyxy coords only!
+        #x1, y1, x2, y2 = box[1:]*416
+        x1, y1, x2, y2 = to_xyxy_coords(boxes[1:], 1242, 375)
+        # add image index on the list
+
+        true_box = [0, boxes[0].item(), 1, x1.item(), y1.item(), x2.item(), y2.item()] 
+        true_boxes.append(true_box)
+            
+    #         true_box = [img_index+batch*batch_size, box[0].item(), 1, x1.item(), y1.item(), x2.item(), y2.item()] 
+    #         true_boxes.append(true_box)
+
+    for bbox in output_boxes:
+        # works with xyxy coords only!
+        x1, y1, x2, y2 = to_xyxy_coords(bbox[1:5], 1242/416, 375/416)
+        #x1, y1, x2, y2 = bbox[1:5]
+
+        pred_box = [0, 
+        bbox[6].item(), 
+        bbox[5].item() , 
+        x1.item(), 
+        y1.item(),
+        x2.item(), 
+        y2.item()]
+
+        pred_boxes.append(pred_box)
+
+    images_dir = Path("data/image_splits/test/images")
+    depth_dir = Path("data/Depth_anything_v2/test/depth")
+
+    image_files = sorted([p for p in images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
+
+    depth_files = sorted([p for p in depth_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
+
+    img_path = image_files[index]
+    depth_path = depth_files[index]
+
+    rgb_image = Image.open(img_path).convert("RGB") 
+    depth_image = Image.open(depth_path).convert("L")
+
+    rgb_array = np.array(rgb_image)
+    depth_array = np.array(depth_image)
+
+    rgb_wboxes = draw_bounding_boxes(rgb_array, pred_boxes, true_boxes)
+    depth_wboxes = draw_bounding_boxes(depth_array, pred_boxes, true_boxes)
+
+
+    #Show the image with bounding boxes
+    fig, axes = plt.subplots(2,1, figsize=(10, 6))
+    axes[0].imshow(rgb_wboxes)
+    axes[0].axis("off")
+    axes[1].imshow(depth_wboxes, cmap="gray")
+    axes[1].axis("off")
+    plt.tight_layout()
+    plt.show()

@@ -57,15 +57,15 @@ class YoloDarknetDataset(Dataset):
             rgb_image = Image.open(img_path).convert("RGB") 
             depth_image = Image.open(depth_path).convert("L")
 
-            # Convert images to numpy arrays
-            rgb_array = np.array(rgb_image)  # Shape: (H, W, 3)
-            depth_array = np.array(depth_image)  # Shape: (H, W)
+            # # Convert images to numpy arrays
+            # rgb_array = np.array(rgb_image)  # Shape: (H, W, 3)
+            # depth_array = np.array(depth_image)  # Shape: (H, W)
 
-            depth_array = np.expand_dims(depth_array, axis=-1)  # Shape: (H, W, 1)
+            # depth_array = np.expand_dims(depth_array, axis=-1)  # Shape: (H, W, 1)
 
-            four_channel_array = np.concatenate((rgb_array, depth_array), axis=-1)  # Shape: (H, W, 4)
+            #four_channel_array = np.concatenate((rgb_array, depth_array), axis=-1)  # Shape: (H, W, 4)
 
-            img = Image.fromarray(four_channel_array, mode="RGBA")
+            #img = Image.fromarray(four_channel_array, mode="RGBA")
 
 
 
@@ -83,7 +83,10 @@ class YoloDarknetDataset(Dataset):
             
         # Apply transforms if specified
         if self.transform:
-            img = self.transform(img)
+            rgb_tensor = self.transform(rgb_image)
+            depth_tensor = self.transform(depth_image)
+            img = torch.cat((rgb_tensor, depth_tensor), 0)
+            #img = self.transform(img)
 
         # Load the corresponding label file
         label_path = self.labels_dir / f"{img_path.stem}.txt"
