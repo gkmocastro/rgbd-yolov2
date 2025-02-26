@@ -302,8 +302,8 @@ def plot_result(model,
 
         pred_boxes.append(pred_box)
 
-    images_dir = Path("data/image_splits/test/images")
-    depth_dir = Path("data/Depth_anything_v2/test/depth")
+    images_dir = test_dataset.images_dir
+    depth_dir = test_dataset.depth_dir
 
     image_files = sorted([p for p in images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
 

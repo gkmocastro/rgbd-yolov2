@@ -52,41 +52,28 @@ class YoloDarknetDataset(Dataset):
 
         if self.model_type=="rgb":
             img = Image.open(img_path).convert('RGB')
+            
+            # Apply transforms if specified for each case of model_type
+            if self.transform:
+                img = self.transform(img)
 
         if self.model_type=="rgbd":
             rgb_image = Image.open(img_path).convert("RGB") 
             depth_image = Image.open(depth_path).convert("L")
 
-            # # Convert images to numpy arrays
-            # rgb_array = np.array(rgb_image)  # Shape: (H, W, 3)
-            # depth_array = np.array(depth_image)  # Shape: (H, W)
-
-            # depth_array = np.expand_dims(depth_array, axis=-1)  # Shape: (H, W, 1)
-
-            #four_channel_array = np.concatenate((rgb_array, depth_array), axis=-1)  # Shape: (H, W, 4)
-
-            #img = Image.fromarray(four_channel_array, mode="RGBA")
-
-
-
-
-        # se a opção do depth, entao carrega o mapa
-        # ainda precisa fazer ele retornar um RGBD 
-        # Split the RGB image into its channels
-        #r, g, b = rgb_image.split()
-
-        # Create a new 4-channel image by combining the RGB and the grayscale channel
-        #rgba_image = Image.merge("RGBA", (r, g, b, grayscale_image))
+            # Apply transforms if specified for each case of model_type
+            if self.transform:
+                rgb_tensor = self.transform(rgb_image)
+                depth_tensor = self.transform(depth_image)
+                img = torch.cat((rgb_tensor, depth_tensor), 0)
         
         if self.model_type == "depth":
             img = Image.open(depth_path).convert('L')
-            
-        # Apply transforms if specified
-        if self.transform:
-            rgb_tensor = self.transform(rgb_image)
-            depth_tensor = self.transform(depth_image)
-            img = torch.cat((rgb_tensor, depth_tensor), 0)
-            #img = self.transform(img)
+
+            # Apply transforms if specified for each case of model_type
+            if self.transform:
+                img = self.transform(img)
+
 
         # Load the corresponding label file
         label_path = self.labels_dir / f"{img_path.stem}.txt"

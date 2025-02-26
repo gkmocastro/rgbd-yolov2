@@ -19,7 +19,7 @@ def test_step(model: torch.nn.Module,
             )
 
     nms_fn = ln.data.transform.NMS(
-        iou_thresh=.3,
+        iou_thresh=.5,
         class_nms=True
     )
 
@@ -82,4 +82,4 @@ def test_step(model: torch.nn.Module,
 
     metric_map = mean_average_precision(pred_boxes=pred_boxes, true_boxes=true_boxes, iou_threshold=0.5, box_format="corners", num_classes=3)
 
-    return metric_map, test_loss, pred_boxes, true_boxes
+    return metric_map, test_loss
