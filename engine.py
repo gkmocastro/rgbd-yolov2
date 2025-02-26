@@ -251,7 +251,7 @@ def train_yolov2_withval_map(model,
         avg_loss = total_loss / len(train_dataloader)
         
         print(f"-----\nEpoch [{epoch + 1}/{num_epochs}]")
-        print(f"Loss: {avg_loss:.4f}")
+        print(f"Training Loss: {avg_loss:.4f}")
         train_losses.append(avg_loss)
 
         # Save training loss
@@ -266,9 +266,9 @@ def train_yolov2_withval_map(model,
                                     batch_size=batch_size,
                                     loss_fn=loss_fn,
                                     device=device)
-
-            print(f"mAP | AP {metric_map}")
             print(f"Validation Loss: {val_loss:.4f}")
+            print(f"Validation mAP|AP {metric_map}")
+            
 
             # Save validation loss
             with open(f"output/val_loss_{dataset_name}.txt", "a") as file:

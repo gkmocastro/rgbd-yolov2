@@ -10,6 +10,8 @@ from collections import Counter
 import lightnet as ln
 from pathlib import Path
 from PIL import Image
+from torchvision import transforms
+import random
 
 def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
     """
@@ -215,9 +217,13 @@ def mean_average_precision(
         precisions = torch.cat((torch.tensor([1]), precisions))
         recalls = torch.cat((torch.tensor([0]), recalls))
         # torch.trapz for numerical integration
-        average_precisions.append(torch.trapz(precisions, recalls))
-
-    return sum(average_precisions) / len(average_precisions), average_precisions
+        average_precisions.append(torch.trapz(precisions, recalls).item())
+    mavp = sum(average_precisions) / len(average_precisions)
+    # print(f"type mavp {type(mavp)}")
+    # print(f"mavp {mavp}")
+    # print(f"type mavp {type(average_precisions)}")
+    # print(f"average_precisions {average_precisions}")
+    return mavp, average_precisions
         
 def rename_state_dict(state_dict, layer_mapping):
     renamed_state_dict = {}
@@ -257,7 +263,7 @@ def plot_result(model,
 
     # Load image and ground truth
     image, target = test_dataset[index]
-    target = target["boxes"]
+    bbox = target["boxes"]
     #image = image.to("cpu").unsqueeze(0)  # Add batch dimension
     # ground_truth_boxes = target[:, 1:]  # Get the ground truth bounding boxes
     # ground_truth_classes = target[:, 0].int()  # Get the ground truth class IDs
@@ -272,7 +278,7 @@ def plot_result(model,
         output_boxes = GetBoxes_fn(model_output)
         output_boxes = nms_fn(output_boxes)
 
-    for _, boxes in enumerate(target):
+    for _, boxes in enumerate(bbox):
 
         if boxes[0].item() == -1: #supress the padding
             continue
@@ -330,3 +336,38 @@ def plot_result(model,
     axes[1].axis("off")
     plt.tight_layout()
     plt.show()
+
+
+class CustomTransform(object):
+    def __init__(self, resize_size=(416, 416), flip_prob=0.5):
+        self.resize = transforms.Resize(resize_size)
+        self.to_tensor = transforms.ToTensor()
+        self.flip_prob = flip_prob
+
+    def __call__(self, rgb_image, depth_image, target):
+        # Resize both images
+        rgb_image = self.resize(rgb_image)
+        depth_image = self.resize(depth_image)
+
+        # Convert bounding boxes to tensor
+        bbox = torch.tensor(target["boxes"], dtype=torch.float32)
+
+        # Horizontal flip with a given probability
+        # The flip_flag is used only for visualization purposes
+        if random.random() < self.flip_prob:
+            rgb_image = transforms.functional.hflip(rgb_image)
+            depth_image = transforms.functional.hflip(depth_image)
+            # Adjust the x coordinate of the center of the bounding box
+            bbox[:, 1] = 1 - bbox[:, 1]
+
+        # Convert both images to tensors
+        rgb_tensor = self.to_tensor(rgb_image)
+        depth_tensor = self.to_tensor(depth_image)
+
+        # Concatenate RGB and depth tensors along the channel dimension
+        img = torch.cat((rgb_tensor, depth_tensor), 0)
+
+        # Update target with the transformed bounding boxes
+        target["boxes"] = bbox.tolist()
+
+        return img, target

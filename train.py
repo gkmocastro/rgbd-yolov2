@@ -6,10 +6,11 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import model_builder
 import lightnet as ln
-from utils import load_config
+from utils import load_config, CustomTransform
 from engine import train_yolov2, train_yolov2_withval, train_yolov2_withval_map
 import argparse
-
+import random
+    
 parser = argparse.ArgumentParser(description='Hyperparameters')
 parser.add_argument("-c", "--config", help="path to config file", required=True)
 args = parser.parse_args()
@@ -57,10 +58,9 @@ optimizer = optim.Adam(
     lr=LEARNING_RATE,
 )
 
-train_transforms = transforms.Compose([
-    transforms.Resize((416, 416)),
-    transforms.ToTensor()
-])
+train_transforms = CustomTransform(resize_size=(416, 416), flip_prob=0.5)
+    
+val_transforms = CustomTransform(resize_size=(416, 416), flip_prob=0)
 
 train_dataset = YoloDarknetDataset(
     images_dir=TRAIN_IMG_DIR,
@@ -84,7 +84,7 @@ val_dataset = YoloDarknetDataset(
     depth_dir=VAL_DEPTH_DIR,
     labels_dir=VAL_LABEL_DIR,
     classes=["Cyclist", "Pedestrian", "Car"],
-    transform=train_transforms,
+    transform=val_transforms,
     model_type=MODEL_TYPE
 )
 

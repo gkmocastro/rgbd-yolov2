@@ -12,8 +12,8 @@ test_label_dir: "/home/gkmo/workspace/data/new_splits/test/labels"
 batch_size: 16
 num_workers: 16
 learning_rate: 0.01
-num_epochs: 4
+num_epochs: 5
 device: "cuda"
 model_type: "rgbd"
 fuse_layer: 15
-val_every: 2
+val_every: 1

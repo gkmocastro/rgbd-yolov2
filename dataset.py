@@ -49,6 +49,9 @@ class YoloDarknetDataset(Dataset):
         # Load the image
         img_path = self.image_files[idx]
         depth_path = self.depth_files[idx]
+        label_path = self.labels_dir / f"{img_path.stem}.txt"
+
+        target = self._load_labels(label_path)
 
         if self.model_type=="rgb":
             img = Image.open(img_path).convert('RGB')
@@ -61,11 +64,16 @@ class YoloDarknetDataset(Dataset):
             rgb_image = Image.open(img_path).convert("RGB") 
             depth_image = Image.open(depth_path).convert("L")
 
-            # Apply transforms if specified for each case of model_type
             if self.transform:
-                rgb_tensor = self.transform(rgb_image)
-                depth_tensor = self.transform(depth_image)
-                img = torch.cat((rgb_tensor, depth_tensor), 0)
+                img, target = self.transform(rgb_image, depth_image, target) 
+                #the extra argument is for flip_flag, which is not used in this case, only for visualization purposes
+
+
+            # # Apply transforms if specified for each case of model_type
+            # if self.transform:
+            #     rgb_tensor = self.transform(rgb_image)
+            #     depth_tensor = self.transform(depth_image)
+            #     img = torch.cat((rgb_tensor, depth_tensor), 0)
         
         if self.model_type == "depth":
             img = Image.open(depth_path).convert('L')
@@ -75,9 +83,10 @@ class YoloDarknetDataset(Dataset):
                 img = self.transform(img)
 
 
-        # Load the corresponding label file
-        label_path = self.labels_dir / f"{img_path.stem}.txt"
-        boxes, labels = self._load_labels(label_path)
+        # separate boxes and labels for each sample
+        
+        boxes = target['boxes']
+        labels = target['labels']
 
         # Pad to max_boxes with (-1, 0, 0, 0, 0) for missing boxes
         num_boxes = len(boxes)
@@ -117,4 +126,4 @@ class YoloDarknetDataset(Dataset):
                     labels.append(int(class_id))
                     boxes.append([class_id, x_center, y_center, width, height])
 
-        return boxes, labels
+        return {'boxes': boxes, 'labels': labels}
