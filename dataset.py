@@ -52,39 +52,14 @@ class YoloDarknetDataset(Dataset):
         label_path = self.labels_dir / f"{img_path.stem}.txt"
 
         target = self._load_labels(label_path)
+        rgb_image = Image.open(img_path).convert("RGB") 
+        depth_image = Image.open(depth_path).convert("L")
 
-        if self.model_type=="rgb":
-            img = Image.open(img_path).convert('RGB')
-            
-            # Apply transforms if specified for each case of model_type
-            if self.transform:
-                img = self.transform(img)
-
-        if self.model_type=="rgbd":
-            rgb_image = Image.open(img_path).convert("RGB") 
-            depth_image = Image.open(depth_path).convert("L")
-
-            if self.transform:
-                img, target = self.transform(rgb_image, depth_image, target) 
-                #the extra argument is for flip_flag, which is not used in this case, only for visualization purposes
-
-
-            # # Apply transforms if specified for each case of model_type
-            # if self.transform:
-            #     rgb_tensor = self.transform(rgb_image)
-            #     depth_tensor = self.transform(depth_image)
-            #     img = torch.cat((rgb_tensor, depth_tensor), 0)
-        
-        if self.model_type == "depth":
-            img = Image.open(depth_path).convert('L')
-
-            # Apply transforms if specified for each case of model_type
-            if self.transform:
-                img = self.transform(img)
+        if self.transform:
+            img, target = self.transform(rgb_image, depth_image, target)
 
 
         # separate boxes and labels for each sample
-        
         boxes = target['boxes']
         labels = target['labels']
 

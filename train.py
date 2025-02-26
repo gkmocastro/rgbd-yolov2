@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import model_builder
 import lightnet as ln
-from utils import load_config, CustomTransform
+from utils import load_config, RGBDCustomTransform
 from engine import train_yolov2, train_yolov2_withval, train_yolov2_withval_map
 import argparse
 import random
@@ -58,9 +58,9 @@ optimizer = optim.Adam(
     lr=LEARNING_RATE,
 )
 
-train_transforms = CustomTransform(resize_size=(416, 416), flip_prob=0.5)
+train_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0.5)
     
-val_transforms = CustomTransform(resize_size=(416, 416), flip_prob=0)
+val_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0)
 
 train_dataset = YoloDarknetDataset(
     images_dir=TRAIN_IMG_DIR,

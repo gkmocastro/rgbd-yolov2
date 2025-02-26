@@ -338,7 +338,7 @@ def plot_result(model,
     plt.show()
 
 
-class CustomTransform(object):
+class RGBDCustomTransform(object):
     def __init__(self, resize_size=(416, 416), flip_prob=0.5):
         self.resize = transforms.Resize(resize_size)
         self.to_tensor = transforms.ToTensor()
@@ -366,6 +366,75 @@ class CustomTransform(object):
 
         # Concatenate RGB and depth tensors along the channel dimension
         img = torch.cat((rgb_tensor, depth_tensor), 0)
+
+        # Update target with the transformed bounding boxes
+        target["boxes"] = bbox.tolist()
+
+        return img, target
+    
+class RGBCustomTransform(object):
+    def __init__(self, resize_size=(416, 416), flip_prob=0.5):
+        self.resize = transforms.Resize(resize_size)
+        self.to_tensor = transforms.ToTensor()
+        self.flip_prob = flip_prob
+
+    def __call__(self, rgb_image, depth_image, target):
+        # Resize both images
+        rgb_image = self.resize(rgb_image)
+        #depth_image = self.resize(depth_image)
+
+        # Convert bounding boxes to tensor
+        bbox = torch.tensor(target["boxes"], dtype=torch.float32)
+
+        # Horizontal flip with a given probability
+        # The flip_flag is used only for visualization purposes
+        if random.random() < self.flip_prob:
+            rgb_image = transforms.functional.hflip(rgb_image)
+            #depth_image = transforms.functional.hflip(depth_image)
+            # Adjust the x coordinate of the center of the bounding box
+            bbox[:, 1] = 1 - bbox[:, 1]
+
+        # Convert both images to tensors
+        rgb_tensor = self.to_tensor(rgb_image)
+        #depth_tensor = self.to_tensor(depth_image)
+
+        # Concatenate RGB and depth tensors along the channel dimension
+        img = rgb_tensor
+
+        # Update target with the transformed bounding boxes
+        target["boxes"] = bbox.tolist()
+
+        return img, target
+    
+
+class DepthCustomTransform(object):
+    def __init__(self, resize_size=(416, 416), flip_prob=0.5):
+        self.resize = transforms.Resize(resize_size)
+        self.to_tensor = transforms.ToTensor()
+        self.flip_prob = flip_prob
+
+    def __call__(self, rgb_image, depth_image, target):
+        # Resize both images
+        #rgb_image = self.resize(rgb_image)
+        depth_image = self.resize(depth_image)
+
+        # Convert bounding boxes to tensor
+        bbox = torch.tensor(target["boxes"], dtype=torch.float32)
+
+        # Horizontal flip with a given probability
+        # The flip_flag is used only for visualization purposes
+        if random.random() < self.flip_prob:
+            #rgb_image = transforms.functional.hflip(rgb_image)
+            depth_image = transforms.functional.hflip(depth_image)
+            # Adjust the x coordinate of the center of the bounding box
+            bbox[:, 1] = 1 - bbox[:, 1]
+
+        # Convert both images to tensors
+        #rgb_tensor = self.to_tensor(rgb_image)
+        depth_tensor = self.to_tensor(depth_image)
+
+        # Concatenate RGB and depth tensors along the channel dimension
+        img = depth_tensor
 
         # Update target with the transformed bounding boxes
         target["boxes"] = bbox.tolist()
