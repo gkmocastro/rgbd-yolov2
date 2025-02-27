@@ -440,3 +440,37 @@ class DepthCustomTransform(object):
         target["boxes"] = bbox.tolist()
 
         return img, target
+    
+
+def show_sample(dataset, index, data_type="rgb"):
+    image, target = dataset[index]
+    boxes = target["boxes"]
+    true_boxes = []
+
+
+    for _, boxes in enumerate(boxes):
+
+        if boxes[0].item() == -1: #supress the padding
+            continue
+        # works with xyxy coords only!
+        #x1, y1, x2, y2 = box[1:]*416
+        x1, y1, x2, y2 = to_xyxy_coords(boxes[1:], 416, 416)
+        # add image index on the list
+
+        true_box = [0, boxes[0].item(), 1, x1.item(), y1.item(), x2.item(), y2.item()] 
+        true_boxes.append(true_box)
+
+
+    image_array = (image.cpu().permute(1,2,0)*255).numpy()
+    image_copy = image_array.copy().astype(np.uint8)
+
+    # Draw ground truth bounding boxes (Green)
+    for box in true_boxes:
+        _, class_index,_,  x1, y1, x2, y2 = box
+        cv2.rectangle(image_copy, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+        label = f"{class_index:.0f}"
+        cv2.putText(image_copy, label, (int(x1), int(y1) - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+    
+    plt.imshow(image_copy)
+    plt.show()

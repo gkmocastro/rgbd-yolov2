@@ -1,6 +1,7 @@
 import torch
 from test_script import test_step
 import json
+import time
 
 def train_yolov2(model, 
                  train_dataloader, 
@@ -109,12 +110,17 @@ def train_yolov2_withval(model,
     """
     # Move the model to the specified device
     model.to(device)
-    
+
+    print(f"Start training process with device {device}")
+
+    start_training_time = time.time()
+
     # Store loss per epoch
     epoch_losses = []
     best_val_loss = float('inf')
     best_epoch = 0
     for epoch in range(num_epochs):
+        start_time = time.time()
         model.train()  # Set model to training mode
         total_loss = 0.0  # Track total loss for the epoch
 
@@ -139,7 +145,6 @@ def train_yolov2_withval(model,
         # Calculate and store average loss for the epoch
         avg_loss = total_loss / len(train_dataloader)
         
-        print(f"-----\nEpoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
         epoch_losses.append(avg_loss)
 
@@ -147,8 +152,13 @@ def train_yolov2_withval(model,
         with open(f"output/train_loss_{dataset_name}.txt", "a") as file:
             file.write(f"{avg_loss}\n")
 
+        end_time = time.time()
+        epoch_time = end_time - start_time
+
+        print(f"-----\nEpoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f} | Time: {epoch_time:.2f} seconds")
         # Validation step every 10 epochs
         if (epoch + 1) % val_every == 0:
+            print(f"Validation step at epoch {epoch+1}")
             model.eval()  # Set model to evaluation mode
             val_loss = 0.0
             with torch.inference_mode():
@@ -181,6 +191,11 @@ def train_yolov2_withval(model,
             with open(f"output/output_{dataset_name}.txt", "w") as file:
                 file.write(f"Best epoch: {best_epoch}")
 
+
+
+    end_training_time = time.time()
+    training_time = end_training_time - start_training_time
+    print(f"Total Training time: {training_time:.2f} seconds")
     return epoch_losses
 
 
