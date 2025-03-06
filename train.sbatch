@@ -30,8 +30,8 @@ srun -N1 -n1 --cpu_bind=cores -l --nodelist=${exec_node} \
     --cpus-per-task=${cpu_curr_node} \
     singularity exec --nv \
     -B /home/escorpiao -B /scratch \
-    --pwd /home/escorpiao/workspace/depth-anything-dataset/rgbd-yolov2 \
-    /home/escorpiao/.lico/container/allPython.sif bash /home/escorpiao/workspace/depth-anything-dataset/rgbd-yolov2/train_rgbd.sh 
+    --pwd /home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2 \
+    /home/escorpiao/.lico/container/allPython.sif bash /home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2/train_rgbd.sh 
 set +x
 
 
