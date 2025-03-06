@@ -6,10 +6,9 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import model_builder
 import lightnet as ln
-from utils import load_config, RGBDCustomTransform
-from engine import train_yolov2, train_yolov2_withval, train_yolov2_withval_map
+from utils import load_config, RGBDCustomTransform, DepthCustomTransform, RGBCustomTransform
+from engine import train_yolov2
 import argparse
-import random
     
 parser = argparse.ArgumentParser(description='Hyperparameters')
 parser.add_argument("-c", "--config", help="path to config file", required=True)
@@ -58,9 +57,15 @@ optimizer = optim.Adam(
     lr=LEARNING_RATE,
 )
 
-train_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0.5)
-    
-val_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0)
+if MODEL_TYPE == "depth":
+    train_transforms = DepthCustomTransform(resize_size=(416, 416), flip_prob=0.5)
+    val_transforms = DepthCustomTransform(resize_size=(416, 416), flip_prob=0)
+elif MODEL_TYPE == "rgb":
+    train_transforms = RGBCustomTransform(resize_size=(416, 416), flip_prob=0.5)
+    val_transforms = RGBCustomTransform(resize_size=(416, 416), flip_prob=0)
+else:
+    train_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0.5)  
+    val_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0)
 
 train_dataset = YoloDarknetDataset(
     images_dir=TRAIN_IMG_DIR,
@@ -98,7 +103,7 @@ val_dataloader = DataLoader(
 )
 
 
-train_yolov2_withval_map(model=model, 
+train_yolov2(model=model, 
             train_dataloader=train_dataloader, 
             val_dataloader=val_dataloader,
             loss_fn=loss_fn, 
