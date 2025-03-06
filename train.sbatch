@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name='train_rgbd_anything'
 #SBATCH --chdir=/home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2
-#SBATCH --output=/home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2/logs
-#SBATCH --error=/home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2/logs
+#SBATCH --output=/home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2/logs/log.out
+#SBATCH --error=/home/escorpiao/workspace/depth-obj-detection/rgbd-yolov2/logs/log.out
 #SBATCH --partition=gpu
 #SBATCH --time=0-24:00
 #SBATCH --cpus-per-task=32
