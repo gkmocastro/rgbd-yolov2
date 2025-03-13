@@ -14,7 +14,7 @@ def model_builder(num_classes, model_type="rgb", fuse_layer=16):
     
     if model_type=="rgb":
         detection_model = ln.models.YoloV2(num_classes)
-        detection_model.load('weights/yolo-pretrained_darknet.pt', strict=False, weights_only=True)
+        detection_model.load('weights/yolo-pretrained_darknet.pt', strict=False)
         return detection_model
     elif model_type=="depth":
         detection_model = ln.models.YoloV2(num_classes)
