@@ -4,12 +4,9 @@ import json
 import time
 
 
-
-
-
 def train_yolov2(model, 
                 train_dataloader, 
-                val_dataloader,  # Add validation dataloader
+                val_dataloader,  
                 loss_fn, 
                 optimizer, 
                 num_epochs, 
@@ -54,7 +51,7 @@ def train_yolov2(model,
         start_time = time.time()
         model.train()  # Set model to training mode
         total_loss = 0.0  # Track total loss for the epoch
-
+        print(f"Starting epoch {epoch + 1} of {num_epochs}")
         for batch, (X, y) in enumerate(train_dataloader):
             images = X.to(device)
             targets = y["boxes"]
@@ -84,7 +81,7 @@ def train_yolov2(model,
         # Save training loss
         with open(f"output/train_loss_{dataset_name}.txt", "a") as file:
             file.write(f"{avg_loss}\n")
-        print(f"-----\nEpoch [{epoch + 1}/{num_epochs}]\nLoss: {avg_loss:.4f}\n Epoch time: {epoch_time:.2f} seconds")
+        print(f"-----\nEpoch [{epoch + 1}/{num_epochs}]\nLoss: {avg_loss:.4f}\nEpoch time: {epoch_time:.2f} seconds")
         # Validation step every 10 epochs
         if (epoch + 1) % val_every == 0:
             metric_map, val_loss = test_step(
