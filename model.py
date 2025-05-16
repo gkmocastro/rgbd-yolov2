@@ -2,8 +2,18 @@ import lightnet as ln
 import functools
 import torch
 from torch import nn
-from utils import rename_state_dict
 from remapping_rules import remap_rgbd_15_fusion_model, remap_rgbd_15_fusion_layers
+
+
+def rename_state_dict(state_dict, layer_mapping):
+    renamed_state_dict = {}
+    for src_layer, tgt_layer in layer_mapping.items():
+        if src_layer in state_dict:
+            renamed_state_dict[tgt_layer] = state_dict[src_layer]
+        else:
+            print(f"Warning: {src_layer} not found in the source state_dict.")
+    return renamed_state_dict
+
 
 def model_builder(num_classes, model_type="rgb", fuse_layer=16):
     """ 

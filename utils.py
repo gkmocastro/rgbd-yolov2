@@ -225,14 +225,7 @@ def mean_average_precision(
     # print(f"average_precisions {average_precisions}")
     return mavp, average_precisions
         
-def rename_state_dict(state_dict, layer_mapping):
-    renamed_state_dict = {}
-    for src_layer, tgt_layer in layer_mapping.items():
-        if src_layer in state_dict:
-            renamed_state_dict[tgt_layer] = state_dict[src_layer]
-        else:
-            print(f"Warning: {src_layer} not found in the source state_dict.")
-    return renamed_state_dict
+
 
 
 def load_config(file_path):
