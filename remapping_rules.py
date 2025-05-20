@@ -1,4 +1,4 @@
-remap_rgbd_15_fusion_model = {
+remap_rgb_branch_15 = {
     'backbone.module.1_convbatch.layers.0.weight': 'layers.0.1_convbatch_regular.layers.0.weight',
     'backbone.module.1_convbatch.layers.1.weight': 'layers.0.1_convbatch_regular.layers.1.weight',
     'backbone.module.1_convbatch.layers.1.bias': 'layers.0.1_convbatch_regular.layers.1.bias',
@@ -112,7 +112,7 @@ remap_rgbd_15_fusion_model = {
 
 
 
-remap_rgbd_15_fusion_layers = {
+remap_depth_branch_15 = {
 'backbone.module.1_convbatch.layers.0.weight': 'layers.0.1_convbatch_fusion.layers.0.weight',
  'backbone.module.1_convbatch.layers.1.weight': 'layers.0.1_convbatch_fusion.layers.1.weight',
  'backbone.module.1_convbatch.layers.1.bias': 'layers.0.1_convbatch_fusion.layers.1.bias',
