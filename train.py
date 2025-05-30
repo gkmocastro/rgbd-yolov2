@@ -18,7 +18,7 @@ args = parser.parse_args()
 config = load_config(args.config)
 
 
-BASE_DIR = config["base_dir"]
+OUTPUT_DIR = config["output_dir"]
 TRAIN_IMG_DIR = config["train_img_dir"]
 TRAIN_DEPTH_DIR = config["train_depth_dir"]
 TRAIN_LABEL_DIR =  config["train_label_dir"]
@@ -31,7 +31,7 @@ LEARNING_RATE = config["learning_rate"]
 NUM_EPOCHS = config["num_epochs"]
 MODEL_TYPE = config["model_type"]
 FUSE_LAYER = config["fuse_layer"]
-DATASET_NAME = config["dataset_name"]
+EXPERIMENT_NAME = config["experiment_name"]
 VAL_EVERY = config["val_every"]
 
 # TRAIN_IMG_DIR =  BASE_DIR + TRAIN_IMG_DIR
@@ -110,6 +110,7 @@ train_yolov2(model=model,
             optimizer=optimizer, 
             num_epochs=NUM_EPOCHS, 
             device=DEVICE,
-            dataset_name=DATASET_NAME,
+            experiment_name=EXPERIMENT_NAME,
+            output_dir=OUTPUT_DIR,
             val_every=VAL_EVERY,
             batch_size=BATCH_SIZE)

@@ -1,5 +1,5 @@
-dataset_name: "anythingv2_newsplit"
-base_dir: "/home/gkmo/workspace/data"
+experiment_name: "rgb_teste"
+output_dir: "/home/gkmo/workspace/rgbd-yolov2/output/"
 train_img_dir: "/home/gkmo/workspace/data/new_splits/train/images"
 train_depth_dir: "/home/gkmo/workspace/data/new_anything_split/train"
 train_label_dir: "/home/gkmo/workspace/data/new_splits/train/labels"
@@ -12,7 +12,7 @@ test_label_dir: "/home/gkmo/workspace/data/new_splits/test/labels"
 batch_size: 16
 num_workers: 16
 learning_rate: 0.01
-num_epochs: 5
+num_epochs: 3
 device: "cuda"
 model_type: "rgbd"
 fuse_layer: 15

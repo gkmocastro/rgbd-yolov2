@@ -2,7 +2,8 @@ import torch
 from test_script import test_step
 import json
 import time
-
+import os
+from pathlib import Path
 
 def train_yolov2(model, 
                 train_dataloader, 
@@ -11,7 +12,8 @@ def train_yolov2(model,
                 optimizer, 
                 num_epochs, 
                 device,
-                dataset_name,
+                output_dir,
+                experiment_name,
                 val_every=10,
                 batch_size=16):
     """
@@ -34,6 +36,16 @@ def train_yolov2(model,
     model.to(device)
 
     print(f"Start training process with device {device}")
+    print(f"Experiment Name: {experiment_name}")
+
+    output_dir = output_dir + experiment_name
+    output_dir = Path(output_dir)
+
+    print(f"Output directory: {output_dir}")
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
 
     start_training_time = time.time()
     # Store all the logs in a dict 
@@ -79,9 +91,11 @@ def train_yolov2(model,
         train_losses.append(avg_loss)
 
         # Save training loss
-        with open(f"output/train_loss_{dataset_name}.txt", "a") as file:
+        with open(output_dir / f"train_loss_{experiment_name}.txt", "a") as file:
             file.write(f"{avg_loss}\n")
+
         print(f"-----\nEpoch [{epoch + 1}/{num_epochs}]\nLoss: {avg_loss:.4f}\nEpoch time: {epoch_time:.2f} seconds")
+        
         # Validation step every 10 epochs
         if (epoch + 1) % val_every == 0:
             metric_map, val_loss = test_step(
@@ -95,7 +109,7 @@ def train_yolov2(model,
             
 
             # Save validation loss
-            with open(f"output/val_loss_{dataset_name}.txt", "a") as file:
+            with open(output_dir / f"val_loss_{experiment_name}.txt", "a") as file:
                 file.write(f"{val_loss}\n")
 
             val_losses.append(val_loss)
@@ -104,10 +118,10 @@ def train_yolov2(model,
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 best_epoch = epoch
-                model.save(f"models/{dataset_name}_best.pth")
+                model.save(output_dir / f"{experiment_name}_best.pth")
                 print(f"Saving new best model Epoch: {epoch} | Validation Loss: {val_loss}")
 
-            with open(f"output/output_{dataset_name}.txt", "w") as file:
+            with open(output_dir / f"output_{experiment_name}.txt", "w") as file:
                 file.write(f"Best epoch: {best_epoch}")
 
     end_training_time = time.time()
@@ -122,7 +136,7 @@ def train_yolov2(model,
     log_dict["training_time"] = training_time
 
 
-    with open(f"output/log_dict_{dataset_name}.json", "w") as file:
+    with open(output_dir / f"log_dict_{experiment_name}.json", "w") as file:
         json.dump(log_dict, file)
 
 
