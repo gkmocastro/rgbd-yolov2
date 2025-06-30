@@ -19,7 +19,8 @@ class YoloDarknetDataset(Dataset):
                  classes=["Cyclist", "Pedestrian", "Car"], 
                  transform=None, 
                  max_boxes=22,
-                 model_type="rgb"):
+                 model_type="rgb",
+                 normalization=False):
         """
         Args:
             images_dir (str or Path): Path to the directory containing images.
@@ -36,12 +37,13 @@ class YoloDarknetDataset(Dataset):
         self.classes = classes
         self.max_boxes = max_boxes
         self.model_type = model_type
+        self.normalization = normalization
 
         # Gather all image files in the directory
         self.image_files = sorted([p for p in self.images_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
         # Gather all depth files in the directory
         self.depth_files = sorted([p for p in self.depth_dir.glob('*') if p.suffix in ['.jpg', '.jpeg', '.png']])
-
+        
     def __len__(self):
         return len(self.image_files)
 
@@ -52,8 +54,15 @@ class YoloDarknetDataset(Dataset):
         label_path = self.labels_dir / f"{img_path.stem}.txt"
 
         target = self._load_labels(label_path)
-        rgb_image = Image.open(img_path).convert("RGB") 
-        depth_image = Image.open(depth_path).convert("L")
+
+        if self.normalization:
+            rgb_image = Image.open(img_path).convert("RGB") 
+            depth_image = Image.open(depth_path)#.convert("L") #Convert to grayscale for depth
+            depth_image = np.array(depth_image).astype(np.float32) / 255.0
+            depth_image = Image.fromarray((depth_image).astype(np.uint8))  # Convert back to PIL Image
+        else:
+            rgb_image = Image.open(img_path).convert("RGB") 
+            depth_image = Image.open(depth_path).convert("L")
 
         if self.transform:
             img, target = self.transform(rgb_image, depth_image, target)

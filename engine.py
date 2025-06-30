@@ -91,8 +91,8 @@ def train_yolov2(model,
         train_losses.append(avg_loss)
 
         # Save training loss
-        with open(output_dir / f"train_loss_{experiment_name}.txt", "a") as file:
-            file.write(f"{avg_loss}\n")
+        # with open(output_dir / f"train_loss_{experiment_name}.txt", "a") as file:
+        #     file.write(f"{avg_loss}\n")
 
         print(f"-----\nEpoch [{epoch + 1}/{num_epochs}]\nLoss: {avg_loss:.4f}\nEpoch time: {epoch_time:.2f} seconds")
         
@@ -108,9 +108,9 @@ def train_yolov2(model,
             print(f"Validation mAP|AP {metric_map}")
             
 
-            # Save validation loss
-            with open(output_dir / f"val_loss_{experiment_name}.txt", "a") as file:
-                file.write(f"{val_loss}\n")
+            # # Save validation loss
+            # with open(output_dir / f"val_loss_{experiment_name}.txt", "a") as file:
+            #     file.write(f"{val_loss}\n")
 
             val_losses.append(val_loss)
             val_maps.append(metric_map)

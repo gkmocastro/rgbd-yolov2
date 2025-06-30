@@ -47,7 +47,7 @@ def check_weights(rgbd_model, rgb_model, depth_model, rgb_remap, depth_remap):
 
 
 
-def model_builder(num_classes, model_type="rgb", fuse_layer=16):
+def model_builder(num_classes, model_type="rgb", fuse_layer=16, depth_checkpoint="output/anything_depth_100_epochs/depth_100_epochs_best.pth"):
     """ 
     Function to return the specified Yolo Model from lightnet framework
 
@@ -78,7 +78,7 @@ def model_builder(num_classes, model_type="rgb", fuse_layer=16):
         renamed_rgb_state_dict = rename_state_dict(rgb_state_dict, remap_rgb_branch_15)
         fusion_model.load_state_dict(renamed_rgb_state_dict, strict=False)
 
-        depth_state_dict = torch.load("models/depth_99.pth", weights_only=True)
+        depth_state_dict = torch.load(depth_checkpoint, weights_only=True)
         renamed_depth_state_dict = rename_state_dict(depth_state_dict, remap_depth_branch_15)
         fusion_model.load_state_dict(renamed_depth_state_dict, strict=False)
 

@@ -17,7 +17,6 @@ args = parser.parse_args()
 
 config = load_config(args.config)
 
-
 OUTPUT_DIR = config["output_dir"]
 TRAIN_IMG_DIR = config["train_img_dir"]
 TRAIN_DEPTH_DIR = config["train_depth_dir"]
@@ -33,6 +32,8 @@ MODEL_TYPE = config["model_type"]
 FUSE_LAYER = config["fuse_layer"]
 EXPERIMENT_NAME = config["experiment_name"]
 VAL_EVERY = config["val_every"]
+NORMALIZATION = config["normalization"]
+DEPTH_CHECKPOINT = config["depth_checkpoint"]
 
 # TRAIN_IMG_DIR =  BASE_DIR + TRAIN_IMG_DIR
 # TRAIN_DEPTH_DIR = BASE_DIR + TRAIN_DEPTH_DIR
@@ -44,7 +45,7 @@ print(f"Using Device {DEVICE}")
 
 print(f"Training with config: \n {config}")
 
-model = model_builder(num_classes=3, model_type=MODEL_TYPE, fuse_layer=FUSE_LAYER).to(DEVICE)
+model = model_builder(num_classes=3, model_type=MODEL_TYPE, fuse_layer=FUSE_LAYER, depth_checkpoint=DEPTH_CHECKPOINT).to(DEVICE)
 
 loss_fn = ln.network.loss.RegionLoss(
     num_classes= model.num_classes,
@@ -55,15 +56,19 @@ loss_fn = ln.network.loss.RegionLoss(
 optimizer = optim.Adam(
     model.parameters(),
     lr=LEARNING_RATE,
+    weight_decay=0.0005
 )
 
 if MODEL_TYPE == "depth":
+    print("Using Depth only data transforms")
     train_transforms = DepthCustomTransform(resize_size=(416, 416), flip_prob=0.5)
     val_transforms = DepthCustomTransform(resize_size=(416, 416), flip_prob=0)
 elif MODEL_TYPE == "rgb":
+    print("Using RGB data transforms")
     train_transforms = RGBCustomTransform(resize_size=(416, 416), flip_prob=0.5)
     val_transforms = RGBCustomTransform(resize_size=(416, 416), flip_prob=0)
 else:
+    print("Using RGBD data transforms")
     train_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0.5)  
     val_transforms = RGBDCustomTransform(resize_size=(416, 416), flip_prob=0)
 
@@ -73,7 +78,8 @@ train_dataset = YoloDarknetDataset(
     labels_dir=TRAIN_LABEL_DIR,
     classes=["Cyclist", "Pedestrian", "Car"],
     transform=train_transforms,
-    model_type=MODEL_TYPE
+    model_type=MODEL_TYPE,
+    normalization=NORMALIZATION
 )
 
 train_dataloader = DataLoader(
@@ -90,7 +96,8 @@ val_dataset = YoloDarknetDataset(
     labels_dir=VAL_LABEL_DIR,
     classes=["Cyclist", "Pedestrian", "Car"],
     transform=val_transforms,
-    model_type=MODEL_TYPE
+    model_type=MODEL_TYPE,
+    normalization=NORMALIZATION
 )
 
 

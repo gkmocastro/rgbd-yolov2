@@ -28,11 +28,12 @@ def test_step(model: torch.nn.Module,
     pred_boxes = []
     true_boxes = []
     img_index = 0
-
+    quantasforam = 0 # TIRAR ISSO AQUI DEPOIS
     # Turn on inference context manager
     with torch.inference_mode():
         # Loop through DataLoader batches
         for batch, (X, y) in enumerate(dataloader):
+            quantasforam += + X.shape[0] # TIRAR ISSO AQUI DEPOIS
             # Send data to target device
             X, y = X.to(device), y["boxes"].to(device)
 
@@ -81,5 +82,5 @@ def test_step(model: torch.nn.Module,
     # test_acc = test_acc / len(dataloader)
 
     metric_map = mean_average_precision(pred_boxes=pred_boxes, true_boxes=true_boxes, iou_threshold=0.5, box_format="corners", num_classes=3)
-
+    print(f"Quantas foram: {quantasforam}")
     return metric_map, test_loss
