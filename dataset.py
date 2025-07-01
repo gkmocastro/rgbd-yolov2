@@ -55,10 +55,18 @@ class YoloDarknetDataset(Dataset):
 
         target = self._load_labels(label_path)
 
+        # if self.normalization:
+        #     rgb_image = Image.open(img_path).convert("RGB") 
+        #     depth_image = Image.open(depth_path)#.convert("L") #Convert to grayscale for depth
+        #     depth_image = np.array(depth_image).astype(np.float32) / 255.0
+        #     depth_image = Image.fromarray((depth_image).astype(np.uint8))  # Convert back to PIL Image
         if self.normalization:
             rgb_image = Image.open(img_path).convert("RGB") 
             depth_image = Image.open(depth_path)#.convert("L") #Convert to grayscale for depth
-            depth_image = np.array(depth_image).astype(np.float32) / 255.0
+            
+            depth_image = np.array(depth_image)  # Normalize depth values if needed
+            depth_image = (depth_image - depth_image.min()) / (depth_image.max() - depth_image.min()) * 255.0
+            depth_image = 255 - depth_image  # Invert depth values 
             depth_image = Image.fromarray((depth_image).astype(np.uint8))  # Convert back to PIL Image
         else:
             rgb_image = Image.open(img_path).convert("RGB") 
